@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   ReactFlow,
+  ReactFlowProvider,
+  useReactFlow,
   Background,
   Controls,
   Handle,
@@ -440,60 +442,62 @@ function useSimulatedExecution(wf: WorkflowExample) {
   return { nodes, edges, run, isRunning, isDone };
 }
 
-/* ── Main component ── */
-export default function WorkflowPreview() {
-  const [active, setActive] = useState(0);
-  const wf = WORKFLOWS[active];
+/* ── Inner component (needs ReactFlowProvider ancestor) ── */
+function WorkflowCanvas({ wf, active, setActive }: { wf: WorkflowExample; active: number; setActive: (i: number) => void }) {
   const { nodes, edges, run, isRunning, isDone } = useSimulatedExecution(wf);
+  const { fitView } = useReactFlow();
+
+  /* Re-fit when the active workflow changes */
+  useEffect(() => {
+    const t = setTimeout(() => fitView({ padding: 0.25, duration: 300 }), 50);
+    return () => clearTimeout(t);
+  }, [active, fitView]);
 
   return (
-    <section id="see-it" aria-labelledby="see-it-heading" className="py-20 sm:py-28">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-8 text-center">
-          <h2 id="see-it-heading" className="text-3xl font-bold sm:text-4xl">
-            See it in <span className="text-gradient">action</span>
-          </h2>
-          <p className="mt-4 text-fg-muted">
-            Real workflows from the example-workflows repo, rendered with React Flow. Hit play
-            to watch the execution simulation — stages mirror the actual Kotlin node implementation.
-          </p>
+    <>
+      {/* Sticky title bar — pins below main nav on scroll */}
+      <div className="sticky top-16 z-40 border-b border-divider bg-base/95 backdrop-blur-sm">
+        <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <h2 id="see-it-heading" className="text-xl font-bold sm:text-2xl">
+              See it in <span className="text-gradient">action</span>
+            </h2>
+            <div className="flex flex-wrap items-center gap-2">
+              {WORKFLOWS.map((w, i) => (
+                <button
+                  key={w.name}
+                  type="button"
+                  onClick={() => setActive(i)}
+                  className={`rounded-full px-3 py-1 text-xs font-medium transition-colors sm:px-4 sm:py-1.5 sm:text-sm ${
+                    i === active
+                      ? 'bg-accent text-on-accent'
+                      : 'bg-overlay/10 text-fg-muted hover:text-fg'
+                  }`}
+                >
+                  {w.name}
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={run}
+                disabled={isRunning}
+                className="flex items-center gap-2 rounded-full bg-green-600 px-3 py-1 text-xs font-semibold text-white transition-colors hover:bg-green-500 disabled:opacity-50 sm:px-4 sm:py-1.5 sm:text-sm"
+              >
+                <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M6.3 2.8A1.5 1.5 0 004 4.1v11.8a1.5 1.5 0 002.3 1.3l9-5.9a1.5 1.5 0 000-2.6l-9-5.9z" />
+                </svg>
+                {isDone ? 'Replay' : isRunning ? 'Running...' : 'Run'}
+              </button>
+            </div>
+          </div>
+          <p className="mt-2 text-sm text-fg-muted">{wf.description}</p>
         </div>
+      </div>
 
-        {/* Workflow selector + run button */}
-        <div className="mb-4 flex flex-wrap items-center justify-center gap-3">
-          {WORKFLOWS.map((w, i) => (
-            <button
-              key={w.name}
-              type="button"
-              onClick={() => setActive(i)}
-              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-                i === active
-                  ? 'bg-accent text-on-accent'
-                  : 'bg-overlay/10 text-fg-muted hover:text-fg'
-              }`}
-            >
-              {w.name}
-            </button>
-          ))}
-          <button
-            type="button"
-            onClick={run}
-            disabled={isRunning}
-            className="flex items-center gap-2 rounded-full bg-green-600 px-4 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-green-500 disabled:opacity-50"
-          >
-            <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M6.3 2.8A1.5 1.5 0 004 4.1v11.8a1.5 1.5 0 002.3 1.3l9-5.9a1.5 1.5 0 000-2.6l-9-5.9z" />
-            </svg>
-            {isDone ? 'Replay' : isRunning ? 'Running...' : 'Run Workflow'}
-          </button>
-        </div>
-
-        <p className="mb-4 text-center text-sm text-fg-muted">{wf.description}</p>
-
-        {/* React Flow canvas */}
-        <div className="overflow-hidden rounded-2xl border border-divider" style={{ height: 480 }}>
+      {/* Canvas — 80vh tall */}
+      <div className="mx-auto max-w-6xl px-4 pt-4 pb-8 sm:px-6 lg:px-8">
+        <div className="overflow-hidden rounded-2xl border border-divider" style={{ height: '40vh', minHeight: 320 }}>
           <ReactFlow
-            key={wf.name}
             nodes={nodes}
             edges={edges}
             nodeTypes={nodeTypes}
@@ -517,6 +521,20 @@ export default function WorkflowPreview() {
           </ReactFlow>
         </div>
       </div>
+    </>
+  );
+}
+
+/* ── Main component ── */
+export default function WorkflowPreview() {
+  const [active, setActive] = useState(0);
+  const wf = WORKFLOWS[active];
+
+  return (
+    <section id="see-it" aria-labelledby="see-it-heading">
+      <ReactFlowProvider key={wf.name}>
+        <WorkflowCanvas wf={wf} active={active} setActive={setActive} />
+      </ReactFlowProvider>
     </section>
   );
 }
