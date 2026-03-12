@@ -455,47 +455,50 @@ function WorkflowCanvas({ wf, active, setActive }: { wf: WorkflowExample; active
 
   return (
     <>
-      {/* Sticky title bar — pins below main nav on scroll */}
-      <div className="sticky top-16 z-40 border-b border-divider bg-base/95 backdrop-blur-sm">
-        <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <h2 id="see-it-heading" className="text-xl font-bold sm:text-2xl">
-              See it in <span className="text-gradient">action</span>
-            </h2>
-            <div className="flex flex-wrap items-center gap-2">
-              {WORKFLOWS.map((w, i) => (
-                <button
-                  key={w.name}
-                  type="button"
-                  onClick={() => setActive(i)}
-                  className={`rounded-full px-3 py-1 text-xs font-medium transition-colors sm:px-4 sm:py-1.5 sm:text-sm ${
-                    i === active
-                      ? 'bg-accent text-on-accent'
-                      : 'bg-overlay/10 text-fg-muted hover:text-fg'
-                  }`}
-                >
-                  {w.name}
-                </button>
-              ))}
-              <button
-                type="button"
-                onClick={run}
-                disabled={isRunning}
-                className="flex items-center gap-2 rounded-full bg-green-600 px-3 py-1 text-xs font-semibold text-white transition-colors hover:bg-green-500 disabled:opacity-50 sm:px-4 sm:py-1.5 sm:text-sm"
-              >
-                <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M6.3 2.8A1.5 1.5 0 004 4.1v11.8a1.5 1.5 0 002.3 1.3l9-5.9a1.5 1.5 0 000-2.6l-9-5.9z" />
-                </svg>
-                {isDone ? 'Replay' : isRunning ? 'Running...' : 'Run'}
-              </button>
-            </div>
-          </div>
-          <p className="mt-2 text-sm text-fg-muted">{wf.description}</p>
+      {/* Title bar */}
+      <div className="mx-auto max-w-6xl px-4 pt-20 pb-6 sm:px-6 sm:pt-28 lg:px-8">
+        <div className="mb-8 text-center">
+          <h2 id="see-it-heading" className="text-3xl font-bold sm:text-4xl">
+            See it in <span className="text-gradient">action</span>
+          </h2>
+          <p className="mt-4 text-fg-muted">
+            Real workflows rendered with React Flow. Hit play to watch the execution simulation.
+          </p>
         </div>
+
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          {WORKFLOWS.map((w, i) => (
+            <button
+              key={w.name}
+              type="button"
+              onClick={() => setActive(i)}
+              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                i === active
+                  ? 'bg-accent text-on-accent'
+                  : 'bg-overlay/10 text-fg-muted hover:text-fg'
+              }`}
+            >
+              {w.name}
+            </button>
+          ))}
+          <button
+            type="button"
+            onClick={run}
+            disabled={isRunning}
+            className="flex items-center gap-2 rounded-full bg-green-600 px-4 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-green-500 disabled:opacity-50"
+          >
+            <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M6.3 2.8A1.5 1.5 0 004 4.1v11.8a1.5 1.5 0 002.3 1.3l9-5.9a1.5 1.5 0 000-2.6l-9-5.9z" />
+            </svg>
+            {isDone ? 'Replay' : isRunning ? 'Running...' : 'Run Workflow'}
+          </button>
+        </div>
+
+        <p className="mt-4 text-center text-sm text-fg-muted">{wf.description}</p>
       </div>
 
-      {/* Canvas — 80vh tall */}
-      <div className="mx-auto max-w-6xl px-4 pt-4 pb-8 sm:px-6 lg:px-8">
+      {/* Canvas */}
+      <div className="mx-auto max-w-6xl px-4 pb-20 sm:px-6 sm:pb-28 lg:px-8">
         <div className="overflow-hidden rounded-2xl border border-divider" style={{ height: '40vh', minHeight: 320 }}>
           <ReactFlow
             nodes={nodes}
