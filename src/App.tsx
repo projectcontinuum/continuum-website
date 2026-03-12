@@ -17,7 +17,7 @@ function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-navy/90 backdrop-blur-sm">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-navy/95 backdrop-blur-sm">
       <nav
         aria-label="Main navigation"
         className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8"
@@ -41,7 +41,7 @@ function Header() {
             href={CTA_HREF}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.98 }}
-            className="rounded-full bg-cyan px-5 py-2 text-sm font-semibold text-navy transition-colors hover:bg-cyan/90 focus:outline-none focus:ring-2 focus:ring-cyan focus:ring-offset-2 focus:ring-offset-navy"
+            className="rounded-full bg-accent px-5 py-2 text-sm font-semibold text-navy transition-colors hover:bg-accent/90 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-navy"
           >
             Request Early Access
           </motion.a>
@@ -90,7 +90,7 @@ function Header() {
               ))}
               <a
                 href={CTA_HREF}
-                className="inline-block rounded-full bg-cyan px-5 py-2 text-center text-sm font-semibold text-navy"
+                className="inline-block rounded-full bg-accent px-5 py-2 text-center text-sm font-semibold text-navy"
               >
                 Request Early Access
               </a>
@@ -117,7 +117,7 @@ export default function App() {
     <>
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-cyan focus:px-4 focus:py-2 focus:text-navy"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-navy"
       >
         Skip to content
       </a>

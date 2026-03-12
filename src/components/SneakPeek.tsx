@@ -1,10 +1,10 @@
 import { motion, useReducedMotion } from 'framer-motion';
 
 const WORKFLOW_NODES = [
-  { label: 'SMILES Input', x: '8%', y: '25%', color: 'cyan' },
+  { label: 'SMILES Input', x: '8%', y: '25%', color: 'accent' },
   { label: 'RDKit Transform', x: '35%', y: '15%', color: 'purple' },
   { label: 'ML Predictor', x: '35%', y: '55%', color: 'purple' },
-  { label: 'Parquet Output', x: '68%', y: '35%', color: 'cyan' },
+  { label: 'Parquet Output', x: '68%', y: '35%', color: 'accent' },
 ] as const;
 
 /* SVG connection lines between nodes */
@@ -43,7 +43,7 @@ export default function SneakPeek() {
         </motion.div>
 
         <motion.div
-          className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-navy via-cyan/5 to-purple/5"
+          className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-navy via-accent/5 to-purple/5"
           variants={fadeInUp}
           initial="hidden"
           whileInView="visible"
@@ -61,7 +61,7 @@ export default function SneakPeek() {
                   y1={`${c.from.y}%`}
                   x2={`${c.to.x}%`}
                   y2={`${c.to.y}%`}
-                  stroke="#06b6d4"
+                  stroke="#C4A8FF"
                   strokeWidth="1.5"
                   strokeDasharray="6 4"
                   opacity="0.4"
@@ -74,8 +74,8 @@ export default function SneakPeek() {
               <div
                 key={node.label}
                 className={`absolute rounded-lg border px-3 py-2 text-xs font-mono sm:text-sm ${
-                  node.color === 'cyan'
-                    ? 'border-cyan/40 bg-cyan/10 text-cyan'
+                  node.color === 'accent'
+                    ? 'border-accent/40 bg-accent/10 text-accent'
                     : 'border-purple/40 bg-purple/10 text-purple'
                 }`}
                 style={{ left: node.x, top: node.y }}
@@ -91,7 +91,7 @@ export default function SneakPeek() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => window.open('https://github.com/projectcontinuum', '_blank')}
-                className="flex items-center gap-3 rounded-full bg-white/10 px-6 py-3 font-semibold text-white backdrop-blur transition-colors hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-cyan focus:ring-offset-2 focus:ring-offset-navy"
+                className="flex items-center gap-3 rounded-full bg-white/10 px-6 py-3 font-semibold text-white backdrop-blur transition-colors hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-navy"
                 aria-label="Watch demo video of Theia workflow editor"
               >
                 <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">

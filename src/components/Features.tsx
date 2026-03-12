@@ -53,7 +53,7 @@ const FEATURES: FeatureCard[] = [
     title: 'AI-Native Nodes',
     description:
       'Drag ML models, molecular transformers, and property predictors directly into your workflow. Every node speaks Parquet.',
-    glowClass: 'hover:glow-cyan',
+    glowClass: 'hover:glow-accent',
   },
   {
     icon: <FlaskIcon />,
@@ -67,7 +67,7 @@ const FEATURES: FeatureCard[] = [
     title: 'GPU-Scale Execution',
     description:
       'Temporal orchestrates your DAG across GPU workers. Scale from laptop to cluster without changing a single node.',
-    glowClass: 'hover:glow-cyan',
+    glowClass: 'hover:glow-accent',
   },
   {
     icon: <ShieldIcon />,
@@ -125,7 +125,7 @@ export default function Features() {
               whileHover={reducedMotion ? undefined : { y: -8 }}
               className={`group rounded-2xl border border-white/10 bg-white/5 p-6 transition-shadow ${card.glowClass}`}
             >
-              <div className="mb-4 text-cyan group-hover:text-purple transition-colors">{card.icon}</div>
+              <div className="mb-4 text-accent group-hover:text-highlight transition-colors">{card.icon}</div>
               <h3 className="mb-2 text-lg font-semibold">{card.title}</h3>
               <p className="text-sm leading-relaxed text-gray-400">{card.description}</p>
             </motion.article>

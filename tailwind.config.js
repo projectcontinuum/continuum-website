@@ -4,9 +4,14 @@ export default {
   theme: {
     extend: {
       colors: {
-        navy: '#0f172a',
-        cyan: '#06b6d4',
-        purple: '#a855f7',
+        navy: '#292D3E',
+        surface: '#363c50',
+        sidebar: '#33384d',
+        accent: '#C4A8FF',
+        purple: '#705697',
+        highlight: '#9273c2',
+        muted: '#a598b8',
+        selection: '#454a5e',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
