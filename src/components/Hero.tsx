@@ -66,7 +66,6 @@ const WORKERS = [
   { id: 'w5', x: 272, y: 105, label: 'worker-5', caps: ['cpu'] },
 ] as const;
 
-const wMap = Object.fromEntries(WORKERS.map((w) => [w.id, w]));
 
 /* ── Execution timeline ── */
 type TimelineStep = {
@@ -163,59 +162,27 @@ function ServerRack({ x, y, label, caps, color, bgOpacity, crashed, reassignTarg
   );
 }
 
-/* ── Animated workflow node ── */
-function WorkflowNode({ id, homeX, homeY, label, requires, step, reducedMotion }: {
-  id: string; homeX: number; homeY: number; label: string; requires: string;
-  step: TimelineStep; reducedMotion: boolean;
+/* ── Static workflow node (always at home position, rendered last → on top) ── */
+function WorkflowNode({ homeX, homeY, label, requires, executing, border, reducedMotion }: {
+  homeX: number; homeY: number; label: string; requires: string;
+  executing: boolean; border: string; reducedMotion: boolean;
 }) {
-  const targetWorkerId = step.active[id];
-  const executing = !!targetWorkerId;
-
-  let dx = 0;
-  let dy = 0;
-  if (executing) {
-    const w = wMap[targetWorkerId];
-    if (w) {
-      dx = w.x + (RW - NW) / 2 - homeX;
-      dy = w.y + (RH - NH) / 2 - homeY;
-    }
-  }
-
-  const border = executing && step.reassigned && targetWorkerId === step.reassigned
-    ? '#22c55e'
-    : 'var(--svg-accent)';
-
   return (
-    <motion.g
-      animate={{ x: dx, y: dy }}
-      transition={reducedMotion
-        ? { duration: 0 }
-        : { type: 'spring', stiffness: 100, damping: 16 }
-      }
-    >
-      {/* Glow when executing */}
-      {executing && (
-        <motion.rect
-          x={homeX - 2} y={homeY - 2} width={NW + 4} height={NH + 4} rx="6"
-          fill={border} opacity={0.15}
-          animate={reducedMotion ? undefined : { opacity: [0.1, 0.2, 0.1] }}
-          transition={{ duration: 1, repeat: Infinity }}
-        />
-      )}
+    <g>
       {/* Node background */}
       <rect x={homeX} y={homeY} width={NW} height={NH} rx="4"
-        fill={border} opacity={executing ? 0.18 : 0.1} />
+        fill={border} opacity={executing ? 0.22 : 0.1} />
       {/* Node border */}
       <motion.rect
         x={homeX} y={homeY} width={NW} height={NH} rx="4"
         fill="none" stroke={border}
-        strokeWidth={executing ? 1.8 : 1.2}
-        animate={reducedMotion ? undefined : { opacity: executing ? [0.6, 1, 0.6] : [0.3, 0.6, 0.3] }}
+        strokeWidth={executing ? 2 : 1.2}
+        animate={reducedMotion ? undefined : { opacity: executing ? [0.7, 1, 0.7] : [0.3, 0.6, 0.3] }}
         transition={{ duration: executing ? 0.8 : 3, repeat: Infinity }}
       />
       {/* Main label */}
       <text x={homeX + NW / 2} y={homeY + 9} textAnchor="middle" fill={border}
-        fontSize="5.2" fontFamily="Inter,system-ui,sans-serif" fontWeight="600" opacity="0.9">
+        fontSize="5.2" fontFamily="Inter,system-ui,sans-serif" fontWeight="600" opacity="0.95">
         {label}
       </text>
       {/* Requires tag */}
@@ -223,13 +190,19 @@ function WorkflowNode({ id, homeX, homeY, label, requires, step, reducedMotion }
         fontSize="3.2" fontFamily="Inter,system-ui,sans-serif" fontWeight="500" opacity="0.5">
         {requires}
       </text>
-    </motion.g>
+    </g>
   );
 }
 
 /* ── Main SVG ── */
 function PipelineSVG({ reducedMotion }: { reducedMotion: boolean }) {
   const step = useTimeline(!reducedMotion);
+
+  // Invert active map: workerId → nodeId (which node is this worker serving?)
+  const workerToNode: Record<string, string> = {};
+  for (const [nodeId, workerId] of Object.entries(step.active)) {
+    workerToNode[workerId] = nodeId;
+  }
   const activeWorkers = new Set(Object.values(step.active));
 
   return (
@@ -237,7 +210,7 @@ function PipelineSVG({ reducedMotion }: { reducedMotion: boolean }) {
       viewBox="0 -10 368 165"
       className="h-52 w-full max-w-xl sm:h-60 md:h-68 lg:h-76"
       role="img"
-      aria-label="Branching workflow DAG: nodes slide into matching server racks during execution. Demonstrates crash recovery via capability-based reassignment."
+      aria-label="Branching workflow DAG: worker racks slide up to execute matching nodes, then return. Demonstrates crash recovery via capability-based reassignment."
     >
       <defs>
         <radialGradient id="hero-glow">
@@ -271,7 +244,7 @@ function PipelineSVG({ reducedMotion }: { reducedMotion: boolean }) {
         </g>
       ))}
 
-      {/* ── Worker racks (bottom layer) ── */}
+      {/* ── Worker racks (animate up behind executing nodes) ── */}
       {WORKERS.map((w) => {
         const isCrashed = w.id === step.crashed;
         const isReassigned = w.id === step.reassigned;
@@ -280,23 +253,52 @@ function PipelineSVG({ reducedMotion }: { reducedMotion: boolean }) {
           isCrashed ? '#ef4444' :
           isReassigned ? '#22c55e' :
           'var(--svg-accent)';
-        const bgOp = isCrashed ? 0.12 : isActive ? 0.14 : 0.06;
+        const bgOp = isCrashed ? 0.15 : isActive ? 0.22 : 0.06;
+
+        // Compute translation to slide rack behind the target node
+        let dx = 0;
+        let dy = 0;
+        const targetNodeId = workerToNode[w.id];
+        if (targetNodeId) {
+          const n = nMap[targetNodeId];
+          if (n) {
+            dx = (n.x - (RW - NW) / 2) - w.x;
+            dy = (n.y - (RH - NH) / 2) - w.y;
+          }
+        }
 
         return (
-          <ServerRack key={w.id}
-            x={w.x} y={w.y} label={w.label} caps={w.caps}
-            color={wColor} bgOpacity={bgOp}
-            crashed={isCrashed} reassignTarget={isReassigned} active={isActive} />
+          <g
+            key={w.id}
+            style={{
+              transform: `translate(${dx}px, ${dy}px)`,
+              transition: reducedMotion ? 'none' : 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            }}
+          >
+            <ServerRack
+              x={w.x} y={w.y} label={w.label} caps={w.caps}
+              color={wColor} bgOpacity={bgOp}
+              crashed={isCrashed} reassignTarget={isReassigned} active={isActive} />
+          </g>
         );
       })}
 
-      {/* ── Workflow nodes (animate into racks) ── */}
-      {NODES.map((n) => (
-        <WorkflowNode key={n.id}
-          id={n.id} homeX={n.x} homeY={n.y}
-          label={n.label} requires={n.requires}
-          step={step} reducedMotion={reducedMotion} />
-      ))}
+      {/* ── Workflow nodes (fixed, rendered last → on top of racks) ── */}
+      {NODES.map((n) => {
+        const executing = !!step.active[n.id];
+        const workerId = step.active[n.id];
+        const border = executing && step.reassigned && workerId === step.reassigned
+          ? '#22c55e'
+          : 'var(--svg-accent)';
+
+        return (
+          <WorkflowNode key={n.id}
+            homeX={n.x} homeY={n.y}
+            label={n.label} requires={n.requires}
+            executing={executing} border={border}
+            reducedMotion={reducedMotion} />
+        );
+      })}
 
       {/* ── Phase labels ── */}
       {step.crashed && !step.reassigned && (
