@@ -350,9 +350,14 @@ export default function Hero() {
             Visual Workflows That Never Die
           </h1>
           <p className="mt-6 max-w-lg text-lg text-fg-muted">
-            An open-source, cloud-native workflow platform for data analytics, big data, science,
-            cheminformatics, and business automation. Inspired by KNIME — built for the browser,
-            crash-proof by design.
+            The only open-source workflow platform that is truly distributed and horizontally
+            scalable. Workflows execute across a pool of workers matched by capability — not
+            trapped on a single machine. Crash-proof by design, scale-out by default.
+          </p>
+          <p className="mt-4 max-w-lg text-sm text-fg-muted">
+            Powered by Eclipse Theia, the workbench is a full IDE — not just a pretty canvas.
+            Native Git for versioning workflows, the VSX Marketplace for custom plugins, and
+            the same extensibility model as VS Code.
           </p>
           <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:justify-center md:justify-start">
             <motion.a
