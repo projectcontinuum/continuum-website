@@ -19,8 +19,8 @@ const RH = 38;  // server rack height
 const NODES = [
   { id: 'a', x: 15,  y: 14, label: 'Ingest',    requires: 'cpu' },
   { id: 'b', x: 88,  y: 14, label: 'Transform',  requires: 'cpu' },
-  { id: 'c', x: 168, y: -4, label: 'ML Train',   requires: 'gpu:cuda' },
-  { id: 'd', x: 168, y: 32, label: 'Analyze',    requires: 'cpu' },
+  { id: 'c', x: 168, y: -16, label: 'ML Train',   requires: 'gpu:cuda' },
+  { id: 'd', x: 168, y: 44, label: 'Analyze',    requires: 'cpu' },
   { id: 'e', x: 245, y: 14, label: 'Merge',      requires: 'cpu' },
   { id: 'f', x: 315, y: 14, label: 'Deploy',     requires: 'cpu' },
 ] as const;
@@ -81,8 +81,11 @@ type TimelineStep = {
 const TIMELINE: TimelineStep[] = [
   { active: { a: 'w1' }, duration: 1500 },
   { active: { b: 'w2' }, duration: 1500 },
-  { active: { c: 'w3', d: 'w5' }, duration: 1200 },
-  { active: { c: 'w4', d: 'w5' }, duration: 1600, crashed: 'w3', reassigned: 'w4' },
+  { active: { c: 'w3', d: 'w5' }, duration: 1800 },
+  // w3 crashes but stays docked — red X visible behind the node
+  { active: { c: 'w3', d: 'w5' }, duration: 1400, crashed: 'w3' },
+  // w3 slides back, w4 slides up — the actual reassignment
+  { active: { c: 'w4', d: 'w5' }, duration: 2200, crashed: 'w3', reassigned: 'w4' },
   { active: { e: 'w2' }, duration: 1500 },
   { active: { f: 'w1' }, duration: 1500 },
   { active: {}, duration: 900 },
@@ -130,14 +133,16 @@ function ServerRack({ x, y, label, caps, color, bgOpacity, crashed, reassignTarg
           fill={crashed ? '#ef4444' : active ? '#22c55e' : color}
           opacity={crashed ? 0.9 : active ? 0.8 : 0.3} />
       ))}
-      {/* Worker name */}
-      <text x={x + RW / 2} y={y + 8} textAnchor="middle" fill={color}
+      {/* Worker name — above the rack when docked to a node, inside when at home */}
+      <text x={x + RW / 2} y={active ? y - 4 : y + 8} textAnchor="middle" fill={color}
         fontSize="4.5" fontFamily="Inter,system-ui,sans-serif" fontWeight="700" opacity="0.85">
         {label}
       </text>
-      {/* Capability tag */}
+      {/* Capability tag — below the rack when docked, inside when at home */}
       {caps.map((cap, i) => (
-        <text key={cap} x={x + RW / 2} y={y + RH - 3 + i * 5} textAnchor="middle"
+        <text key={cap} x={x + RW / 2}
+          y={active ? y + RH + 7 + i * 5 : y + RH - 3 + i * 5}
+          textAnchor="middle"
           fill={color} fontSize="3.8" fontFamily="Inter,system-ui,sans-serif"
           fontWeight="500" opacity="0.55">
           {cap}
@@ -169,6 +174,11 @@ function WorkflowNode({ homeX, homeY, label, requires, executing, border, reduce
 }) {
   return (
     <g>
+      {/* Opaque knockout background so node text is readable on top of rack */}
+      {executing && (
+        <rect x={homeX - 1} y={homeY - 1} width={NW + 2} height={NH + 2} rx="5"
+          fill="rgb(var(--c-bg))" opacity="0.92" />
+      )}
       {/* Node background */}
       <rect x={homeX} y={homeY} width={NW} height={NH} rx="4"
         fill={border} opacity={executing ? 0.22 : 0.1} />
@@ -207,7 +217,7 @@ function PipelineSVG({ reducedMotion }: { reducedMotion: boolean }) {
 
   return (
     <svg
-      viewBox="0 -10 368 165"
+      viewBox="0 -32 368 200"
       className="h-52 w-full max-w-xl sm:h-60 md:h-68 lg:h-76"
       role="img"
       aria-label="Branching workflow DAG: worker racks slide up to execute matching nodes, then return. Demonstrates crash recovery via capability-based reassignment."
@@ -272,7 +282,7 @@ function PipelineSVG({ reducedMotion }: { reducedMotion: boolean }) {
             key={w.id}
             style={{
               transform: `translate(${dx}px, ${dy}px)`,
-              transition: reducedMotion ? 'none' : 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
+              transition: reducedMotion ? 'none' : 'transform 0.9s cubic-bezier(0.22, 1, 0.36, 1)',
             }}
           >
             <ServerRack
@@ -299,26 +309,6 @@ function PipelineSVG({ reducedMotion }: { reducedMotion: boolean }) {
             reducedMotion={reducedMotion} />
         );
       })}
-
-      {/* ── Phase labels ── */}
-      {step.crashed && !step.reassigned && (
-        <g>
-          <rect x="130" y="60" width="100" height="12" rx="6" fill="#ef4444" />
-          <text x="180" y="68.5" textAnchor="middle" fill="white" fontSize="5"
-            fontWeight="700" fontFamily="Inter,system-ui,sans-serif">
-            worker-3 crashed!
-          </text>
-        </g>
-      )}
-      {step.reassigned && (
-        <g>
-          <rect x="115" y="60" width="130" height="12" rx="6" fill="#22c55e" />
-          <text x="180" y="68.5" textAnchor="middle" fill="white" fontSize="5"
-            fontWeight="700" fontFamily="Inter,system-ui,sans-serif">
-            → reassigned to worker-4 (gpu:cuda)
-          </text>
-        </g>
-      )}
 
       {/* ── Orchestration label ── */}
       <text x="184" y="90" textAnchor="middle" fill="var(--svg-accent)"
