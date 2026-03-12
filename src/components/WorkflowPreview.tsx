@@ -216,22 +216,42 @@ const SENSOR_TIMELINE: ExecStep[] = [
   { nodeId: '5', status: 'SUCCESS', duration: '480ms', stages: [s('POST /alerts', 'COMPLETED')] },
 ];
 
-/* Execution timeline for the Anomaly Detector (simpler) */
-const ANOMALY_TIMELINE: ExecStep[] = [
-  { nodeId: '2', status: 'BUSY', progress: 0 },
-  { nodeId: '2', status: 'BUSY', progress: 50 },
-  { nodeId: '2', status: 'SUCCESS', duration: '85ms' },
+/* Execution timeline for RDKit Drug Discovery — dual screening with fan-out/fan-in */
+const CHEMINFORMATICS_TIMELINE: ExecStep[] = [
+  /* Node 1: Create Table — compound library */
+  { nodeId: '1', status: 'BUSY', progress: 0 },
+  { nodeId: '1', status: 'BUSY', progress: 60 },
+  { nodeId: '1', status: 'SUCCESS', duration: '340ms' },
 
-  { nodeId: '3', status: 'BUSY', progress: 0, stages: adStages(0) },
-  { nodeId: '3', status: 'BUSY', progress: 16, stages: adStages(0) },
-  { nodeId: '3', status: 'BUSY', progress: 33, stages: adStages(1) },
-  { nodeId: '3', status: 'BUSY', progress: 55, stages: adStages(1) },
-  { nodeId: '3', status: 'BUSY', progress: 66, stages: adStages(2) },
-  { nodeId: '3', status: 'BUSY', progress: 90, stages: adStages(2) },
-  { nodeId: '3', status: 'SUCCESS', duration: '2.1s', stages: adDone() },
+  /* Node 2: RDKit Descriptors — molecular property computation */
+  { nodeId: '2', status: 'BUSY', progress: 0, stages: [s('Parse SMILES', 'IN_PROGRESS'), s('Compute MW/LogP/TPSA', 'PENDING'), s('Compute HBD/HBA/RotBonds', 'PENDING')] },
+  { nodeId: '2', status: 'BUSY', progress: 20, stages: [s('Parse SMILES', 'COMPLETED'), s('Compute MW/LogP/TPSA', 'IN_PROGRESS'), s('Compute HBD/HBA/RotBonds', 'PENDING')] },
+  { nodeId: '2', status: 'BUSY', progress: 55, stages: [s('Parse SMILES', 'COMPLETED'), s('Compute MW/LogP/TPSA', 'COMPLETED'), s('Compute HBD/HBA/RotBonds', 'IN_PROGRESS')] },
+  { nodeId: '2', status: 'SUCCESS', duration: '4.7s', stages: [s('Parse SMILES', 'COMPLETED'), s('Compute MW/LogP/TPSA', 'COMPLETED'), s('Compute HBD/HBA/RotBonds', 'COMPLETED')] },
 
-  { nodeId: '6', status: 'BUSY', progress: 0 },
-  { nodeId: '6', status: 'SUCCESS', duration: '30ms' },
+  /* Node 3: Lipinski Filter — Rule of 5 gate */
+  { nodeId: '3', status: 'BUSY', progress: 0 },
+  { nodeId: '3', status: 'SUCCESS', duration: '180ms' },
+
+  /* Fork: nodes 4+6 run in parallel (similarity screening + substructure search) */
+  { nodeId: '4', status: 'BUSY', progress: 0, stages: [s('Generate ECFP4', 'IN_PROGRESS'), s('Encode Bit Vectors', 'PENDING')] },
+  { nodeId: '6', status: 'BUSY', progress: 0, stages: [s('Parse SMARTS Pattern', 'IN_PROGRESS'), s('Substructure Match', 'PENDING')] },
+  { nodeId: '4', status: 'BUSY', progress: 55, stages: [s('Generate ECFP4', 'COMPLETED'), s('Encode Bit Vectors', 'IN_PROGRESS')] },
+  { nodeId: '6', status: 'BUSY', progress: 50, stages: [s('Parse SMARTS Pattern', 'COMPLETED'), s('Substructure Match', 'IN_PROGRESS')] },
+  { nodeId: '6', status: 'SUCCESS', duration: '1.4s', stages: [s('Parse SMARTS Pattern', 'COMPLETED'), s('Substructure Match', 'COMPLETED')] },
+  { nodeId: '4', status: 'SUCCESS', duration: '2.1s', stages: [s('Generate ECFP4', 'COMPLETED'), s('Encode Bit Vectors', 'COMPLETED')] },
+
+  /* Node 5: Tanimoto Similarity — compare vs Imatinib reference */
+  { nodeId: '5', status: 'BUSY', progress: 0, stages: [s('Load Reference (Imatinib)', 'IN_PROGRESS'), s('Pairwise Tanimoto', 'PENDING')] },
+  { nodeId: '5', status: 'BUSY', progress: 25, stages: [s('Load Reference (Imatinib)', 'COMPLETED'), s('Pairwise Tanimoto', 'IN_PROGRESS')] },
+  { nodeId: '5', status: 'BUSY', progress: 65, stages: [s('Load Reference (Imatinib)', 'COMPLETED'), s('Pairwise Tanimoto', 'IN_PROGRESS')] },
+  { nodeId: '5', status: 'SUCCESS', duration: '3.8s', stages: [s('Load Reference (Imatinib)', 'COMPLETED'), s('Pairwise Tanimoto', 'COMPLETED')] },
+
+  /* Node 7: Hit Ranker — merge and rank (waits for both branches) */
+  { nodeId: '7', status: 'BUSY', progress: 0, stages: [s('Merge Scores', 'IN_PROGRESS'), s('Rank Candidates', 'PENDING'), s('Filter Top 50', 'PENDING')] },
+  { nodeId: '7', status: 'BUSY', progress: 40, stages: [s('Merge Scores', 'COMPLETED'), s('Rank Candidates', 'IN_PROGRESS'), s('Filter Top 50', 'PENDING')] },
+  { nodeId: '7', status: 'BUSY', progress: 80, stages: [s('Merge Scores', 'COMPLETED'), s('Rank Candidates', 'COMPLETED'), s('Filter Top 50', 'IN_PROGRESS')] },
+  { nodeId: '7', status: 'SUCCESS', duration: '620ms', stages: [s('Merge Scores', 'COMPLETED'), s('Rank Candidates', 'COMPLETED'), s('Filter Top 50', 'COMPLETED')] },
 ];
 
 /* Execution timeline for Unsloth LLM Training — full train → evaluate → deploy pipeline */
@@ -319,19 +339,28 @@ const SENSOR_PIPELINE: WorkflowExample = {
   timeline: SENSOR_TIMELINE,
 };
 
-const ANOMALY_DETECTOR: WorkflowExample = {
-  name: 'Anomaly Detector',
-  description: '3-node flow: generate 1000 sensor readings → Z-score outlier detection → split by threshold',
+const CHEMINFORMATICS: WorkflowExample = {
+  name: 'Drug Screening (RDKit)',
+  description: 'Dual screening: descriptors → Lipinski gate → parallel similarity + substructure search → merge & rank top 50 hits',
   nodes: makeNodes([
-    { id: '2', x: 0, y: 200, title: 'Create Table', subTitle: '1000 sensor readings', inputs: null, outputs: { data: {} } },
-    { id: '3', x: 310, y: 200, title: 'Anomaly Detector', subTitle: 'Z-Score outlier detection', inputs: { data: {} }, outputs: { data: {} } },
-    { id: '6', x: 620, y: 200, title: 'Conditional Splitter', subTitle: 'Split by threshold', inputs: { data: {} }, outputs: { high: {}, low: {} } },
+    { id: '1', x: 0, y: 240, title: 'Create Table', subTitle: '10k compound SMILES', inputs: null, outputs: { data: {} } },
+    { id: '2', x: 260, y: 210, title: 'RDKit Descriptors', subTitle: 'MW, LogP, TPSA, HBD, HBA', inputs: { data: {} }, outputs: { data: {} } },
+    { id: '3', x: 530, y: 240, title: 'Lipinski Filter', subTitle: 'Rule of 5', inputs: { data: {} }, outputs: { pass: {}, fail: {} } },
+    { id: '4', x: 820, y: 100, title: 'Morgan Fingerprints', subTitle: 'ECFP4 r=2 1024-bit', inputs: { data: {} }, outputs: { data: {} } },
+    { id: '5', x: 1100, y: 100, title: 'Tanimoto Similarity', subTitle: 'vs Imatinib reference', inputs: { data: {} }, outputs: { data: {} } },
+    { id: '6', x: 820, y: 400, title: 'Substructure Search', subTitle: 'Benzimidazole scaffold', inputs: { data: {} }, outputs: { data: {} } },
+    { id: '7', x: 1380, y: 240, title: 'Hit Ranker', subTitle: 'Merge & rank top 50', inputs: { similarity: {}, substructure: {} }, outputs: { data: {} } },
   ]),
   edges: [
+    { id: 'e1-2', source: '1', sourceHandle: 'data', target: '2', targetHandle: 'data', type: 'default' },
     { id: 'e2-3', source: '2', sourceHandle: 'data', target: '3', targetHandle: 'data', type: 'default' },
-    { id: 'e3-6', source: '3', sourceHandle: 'data', target: '6', targetHandle: 'data', type: 'default' },
+    { id: 'e3-4', source: '3', sourceHandle: 'pass', target: '4', targetHandle: 'data', type: 'default' },
+    { id: 'e3-6', source: '3', sourceHandle: 'pass', target: '6', targetHandle: 'data', type: 'default' },
+    { id: 'e4-5', source: '4', sourceHandle: 'data', target: '5', targetHandle: 'data', type: 'default' },
+    { id: 'e5-7', source: '5', sourceHandle: 'data', target: '7', targetHandle: 'similarity', type: 'default' },
+    { id: 'e6-7', source: '6', sourceHandle: 'data', target: '7', targetHandle: 'substructure', type: 'default' },
   ],
-  timeline: ANOMALY_TIMELINE,
+  timeline: CHEMINFORMATICS_TIMELINE,
 };
 
 const UNSLOTH_TRAINING: WorkflowExample = {
@@ -355,7 +384,7 @@ const UNSLOTH_TRAINING: WorkflowExample = {
   timeline: UNSLOTH_TIMELINE,
 };
 
-const WORKFLOWS = [SENSOR_PIPELINE, UNSLOTH_TRAINING, ANOMALY_DETECTOR];
+const WORKFLOWS = [SENSOR_PIPELINE, UNSLOTH_TRAINING, CHEMINFORMATICS];
 
 /* ── Hook: simulate execution by stepping through the timeline ── */
 function useSimulatedExecution(wf: WorkflowExample) {
