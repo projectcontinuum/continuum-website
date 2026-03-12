@@ -100,10 +100,11 @@ export default function Features() {
           transition={{ duration: reducedMotion ? 0 : 0.6 }}
         >
           <h2 id="features-heading" className="text-3xl font-bold sm:text-4xl">
-            Built for <span className="text-gradient">developers and data analysts</span>
+            Built for <span className="text-gradient">anyone who builds with data</span>
           </h2>
           <p className="mt-4 text-fg-muted">
-            A distributed, open-source workflow engine with 17+ nodes — and growing with every contributor.
+            Data analysts, scientists, cheminformatics researchers, and developers — drag, drop,
+            and let Temporal keep it running. 17+ nodes and growing.
           </p>
         </motion.div>
 

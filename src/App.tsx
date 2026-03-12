@@ -9,7 +9,7 @@ import Footer from './components/Footer';
 const NAV_LINKS = [
   { label: 'Features', href: '#features' },
   { label: 'Ecosystem', href: '#ecosystem' },
-  { label: 'Contribute', href: '#contribute' },
+  { label: 'Roadmap', href: '#contribute' },
 ] as const;
 
 const GITHUB_ORG_HREF = 'https://github.com/projectcontinuum';

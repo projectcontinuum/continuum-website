@@ -34,10 +34,14 @@ const REPOS = [
 ] as const;
 
 const WANTED = [
-  { area: 'Cheminformatics nodes', detail: 'RDKit integration — molecular descriptors, fingerprints, substructure search, SMILES processing' },
-  { area: 'PyTorch nodes', detail: 'Training, inference, and model management natively in workflows' },
-  { area: 'AI inference node', detail: 'Run trained models (Unsloth/HuggingFace) for prediction inside pipelines' },
-  { area: 'Loop control flow', detail: 'True while/for loops with condition builder for iterative workflows' },
+  { area: 'Cheminformatics Nodes', detail: 'RDKit integration — molecular descriptors, fingerprints, substructure search, SMILES parsing. Help build the first community cheminformatics worker.' },
+  { area: 'Plugin Store', detail: 'Connectors for Slack, Stripe, databases, and AI services. One worker per integration — zero coupling.' },
+  { area: 'PyTorch & AI Inference', detail: 'Training, inference, and model evaluation nodes. Expand the Unsloth ecosystem with prediction and multi-GPU support.' },
+  { area: 'Loop & Flow Control', detail: 'True while/for loops with a visual condition builder. Human-in-the-loop approval gates and pause/resume.' },
+  { area: 'Visual Debugger', detail: 'Timeline replay for executed workflows. Step through node outputs, inspect Parquet data, trace failures.' },
+  { area: 'Electron Standalone', detail: 'Run Continuum as a native desktop app — no browser required. Same canvas, local execution.' },
+  { area: 'Auth & Multi-Tenancy', detail: 'Authentication, role-based access control, and tenant isolation for team and enterprise deployments.' },
+  { area: 'Helm Chart & Kubernetes', detail: 'Production-ready Kubernetes deployment with horizontal scaling. Zero-config self-host with docker compose up.' },
 ] as const;
 
 const fadeInUp = {
@@ -119,16 +123,17 @@ export default function SneakPeek() {
             transition={{ duration: reducedMotion ? 0 : 0.6 }}
           >
             <h2 id="contribute-heading" className="text-3xl font-bold sm:text-4xl">
-              <span className="text-gradient">Looking for contributors</span>
+              The <span className="text-gradient">roadmap</span> — help us build it
             </h2>
             <p className="mt-4 max-w-2xl mx-auto text-fg-muted">
-              Continuum is in beta. We need developers and data analysts to build new nodes,
-              improve the canvas, and expand the platform. Here&apos;s what&apos;s most wanted:
+              Continuum is in beta and growing fast. Whether you work in data analytics, science,
+              cheminformatics, or platform engineering — there&apos;s a piece of the roadmap with
+              your name on it.
             </p>
           </motion.div>
 
           <motion.div
-            className="grid gap-4 sm:grid-cols-2"
+            className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
             variants={stagger}
             initial="hidden"
             whileInView="visible"

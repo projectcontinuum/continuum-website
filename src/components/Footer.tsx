@@ -56,8 +56,8 @@ export default function Footer() {
           <div>
             <span className="text-gradient text-lg font-bold">Project Continuum</span>
             <p className="mt-3 text-sm leading-relaxed text-fg-muted">
-              Open-source, cloud-native visual workflow platform. Inspired by KNIME, built for
-              the cloud, designed to never die. Apache 2.0 licensed.
+              Open-source visual workflow platform for data analytics, science, cheminformatics,
+              and business automation. Inspired by KNIME — built for the browser. Apache 2.0.
             </p>
           </div>
 

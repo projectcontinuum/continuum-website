@@ -120,11 +120,12 @@ export default function Hero() {
           <h1 className="text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
             <span className="text-gradient">Project Continuum</span>
             <br />
-            Visual Workflows That Survive
+            Visual Workflows That Never Die
           </h1>
           <p className="mt-6 max-w-lg text-lg text-fg-muted">
-            Build crash-proof data pipelines in your browser. Drag-drop nodes, durable execution
-            via Temporal, real-time streaming — open source and looking for contributors.
+            An open-source, cloud-native workflow platform for data analytics, big data, science,
+            cheminformatics, and business automation. Inspired by KNIME — built for the browser,
+            crash-proof by design.
           </p>
           <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:justify-center md:justify-start">
             <motion.a
