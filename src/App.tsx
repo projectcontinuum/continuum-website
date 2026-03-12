@@ -3,11 +3,13 @@ import { Routes, Route } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Hero from './components/Hero';
 import Features from './components/Features';
+import WorkflowPreview from './components/WorkflowPreview';
 import SneakPeek from './components/SneakPeek';
 import Footer from './components/Footer';
 
 const NAV_LINKS = [
   { label: 'Features', href: '#features' },
+  { label: 'Demos', href: '#see-it' },
   { label: 'Ecosystem', href: '#ecosystem' },
   { label: 'Roadmap', href: '#contribute' },
 ] as const;
@@ -169,6 +171,7 @@ function LandingPage() {
     <>
       <Hero />
       <Features />
+      <WorkflowPreview />
       <SneakPeek />
     </>
   );
