@@ -8,10 +8,11 @@ import Footer from './components/Footer';
 
 const NAV_LINKS = [
   { label: 'Features', href: '#features' },
-  { label: 'Preview', href: '#preview' },
+  { label: 'Ecosystem', href: '#ecosystem' },
+  { label: 'Contribute', href: '#contribute' },
 ] as const;
 
-const CTA_HREF = 'mailto:access@projectcontinuum.io';
+const GITHUB_ORG_HREF = 'https://github.com/projectcontinuum';
 
 function useTheme() {
   const [isDark, setIsDark] = useState(
@@ -76,12 +77,14 @@ function Header() {
           </button>
 
           <motion.a
-            href={CTA_HREF}
+            href={GITHUB_ORG_HREF}
+            target="_blank"
+            rel="noopener noreferrer"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.98 }}
             className="rounded-full bg-accent px-5 py-2 text-sm font-semibold text-on-accent transition-colors hover:bg-accent/90 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-base"
           >
-            Request Early Access
+            Star on GitHub
           </motion.a>
         </div>
 
@@ -146,10 +149,12 @@ function Header() {
                 </a>
               ))}
               <a
-                href={CTA_HREF}
+                href={GITHUB_ORG_HREF}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-block rounded-full bg-accent px-5 py-2 text-center text-sm font-semibold text-on-accent"
               >
-                Request Early Access
+                Star on GitHub
               </a>
             </div>
           </motion.div>

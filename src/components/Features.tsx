@@ -3,39 +3,36 @@ import { motion, useReducedMotion } from 'framer-motion';
 
 /* Inline SVG icons — stroke-based, 24x24 viewBox */
 
-function BrainIcon() {
+function CanvasIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-8 w-8">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 2a7 7 0 0 0-5 2.1A5 5 0 0 0 3 9c0 2 1 3.5 2.5 4.5C4 15 3 17 3 19a3 3 0 0 0 3 3c1.5 0 3-1 4-2.5" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 2a7 7 0 0 1 5 2.1A5 5 0 0 1 21 9c0 2-1 3.5-2.5 4.5C20 15 21 17 21 19a3 3 0 0 1-3 3c-1.5 0-3-1-4-2.5" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 2v17.5M8 8h8M9 12h6" />
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <path strokeLinecap="round" d="M3 9h18M9 9v12" />
     </svg>
   );
 }
 
-function FlaskIcon() {
+function BoltIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-8 w-8">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9 3h6M10 3v6.5L4.5 18a2 2 0 0 0 1.7 3h11.6a2 2 0 0 0 1.7-3L14 9.5V3" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M7 15h10" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
     </svg>
   );
 }
 
-function RocketIcon() {
+function PuzzleIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-8 w-8">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09zM12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 2a3 3 0 0 0-3 3H5a2 2 0 0 0-2 2v4a3 3 0 1 1 0 6v4a2 2 0 0 0 2 2h4a3 3 0 1 1 6 0h4a2 2 0 0 0 2-2v-4a3 3 0 1 1 0-6V7a2 2 0 0 0-2-2h-4a3 3 0 0 0-3-3z" />
     </svg>
   );
 }
 
-function ShieldIcon() {
+function StreamIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-8 w-8">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12h15M4.5 12l4-4M4.5 12l4 4" />
+      <path strokeLinecap="round" d="M12 4v4M12 16v4M8 6v2M8 16v2M16 6v2M16 16v2" opacity="0.5" />
     </svg>
   );
 }
@@ -49,31 +46,31 @@ interface FeatureCard {
 
 const FEATURES: FeatureCard[] = [
   {
-    icon: <BrainIcon />,
-    title: 'AI-Native Nodes',
+    icon: <CanvasIcon />,
+    title: 'Browser-Native Canvas',
     description:
-      'Drag ML models, molecular transformers, and property predictors directly into your workflow. Every node speaks Parquet.',
+      'Eclipse Theia IDE + React Flow editor. Drag-and-drop workflow building with a real IDE feel — zero install, runs in your browser.',
     glowClass: 'hover:glow-accent',
   },
   {
-    icon: <FlaskIcon />,
-    title: 'Chemistry-First',
+    icon: <BoltIcon />,
+    title: 'Crash-Proof Execution',
     description:
-      'Built-in RDKit, Open Babel, and SMILES tooling. No boilerplate — just connect, configure, and run.',
+      'Powered by Temporal. Workflows survive process crashes, network failures, and restarts. Every step retries automatically.',
     glowClass: 'hover:glow-purple',
   },
   {
-    icon: <RocketIcon />,
-    title: 'GPU-Scale Execution',
+    icon: <PuzzleIcon />,
+    title: 'Extensible by Design',
     description:
-      'Temporal orchestrates your DAG across GPU workers. Scale from laptop to cluster without changing a single node.',
+      'Add capabilities by deploying new workers — not by touching existing ones. Use the feature template to scaffold your own nodes in minutes.',
     glowClass: 'hover:glow-accent',
   },
   {
-    icon: <ShieldIcon />,
-    title: 'Enterprise Security',
+    icon: <StreamIcon />,
+    title: 'Real-Time Streaming',
     description:
-      'Google SSO, Pomerium zero-trust proxy, per-tenant isolation. Your data never leaves your infrastructure.',
+      'Watch workflows execute step-by-step. Kafka streams events to your browser via MQTT over WebSockets. No polling, no refresh.',
     glowClass: 'hover:glow-purple',
   },
 ];
@@ -103,10 +100,10 @@ export default function Features() {
           transition={{ duration: reducedMotion ? 0 : 0.6 }}
         >
           <h2 id="features-heading" className="text-3xl font-bold sm:text-4xl">
-            Everything you need to <span className="text-gradient">accelerate discovery</span>
+            Built for <span className="text-gradient">developers and data analysts</span>
           </h2>
           <p className="mt-4 text-fg-muted">
-            From molecule to model, Continuum handles the entire computational chemistry pipeline.
+            A distributed, open-source workflow engine with 17+ nodes — and growing with every contributor.
           </p>
         </motion.div>
 

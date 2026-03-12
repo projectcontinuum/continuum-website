@@ -26,8 +26,8 @@ const BRANCHES = [0, 2, 4].map((i) => {
 
 const hexPointsStr = HEXAGON_POINTS.map((p) => `${p.x},${p.y}`).join(' ');
 
-const CTA_HREF = 'mailto:access@projectcontinuum.io';
-const GITHUB_HREF = 'https://github.com/projectcontinuum';
+const CTA_HREF = 'https://github.com/projectcontinuum/Continuum';
+const TEMPLATE_HREF = 'https://github.com/projectcontinuum/continuum-feature-template';
 
 function MoleculeSVG({ reducedMotion }: { reducedMotion: boolean }) {
   return (
@@ -112,33 +112,40 @@ export default function Hero() {
           animate="visible"
           transition={{ duration: reducedMotion ? 0 : 0.6 }}
         >
+          <div className="mb-4">
+            <span className="inline-block rounded-full bg-accent/10 px-4 py-1 text-sm font-medium text-accent">
+              Open Source &middot; Apache 2.0 &middot; Beta
+            </span>
+          </div>
           <h1 className="text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
-            <span className="text-gradient">Continuum</span>
+            <span className="text-gradient">Project Continuum</span>
             <br />
-            AI-Powered Chemistry Workflows
+            Visual Workflows That Survive
           </h1>
           <p className="mt-6 max-w-lg text-lg text-fg-muted">
-            Drag-drop nodes. GPU scale. Zero setup. Build, execute, and iterate on computational
-            chemistry pipelines — from RDKit to ML models — all in your browser.
+            Build crash-proof data pipelines in your browser. Drag-drop nodes, durable execution
+            via Temporal, real-time streaming — open source and looking for contributors.
           </p>
           <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:justify-center md:justify-start">
             <motion.a
               href={CTA_HREF}
+              target="_blank"
+              rel="noopener noreferrer"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
               className="rounded-full bg-accent px-8 py-3 text-center font-semibold text-on-accent transition-colors hover:bg-accent/90 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-base"
             >
-              Request Early Access
+              Star on GitHub
             </motion.a>
             <motion.a
-              href={GITHUB_HREF}
+              href={TEMPLATE_HREF}
               target="_blank"
               rel="noopener noreferrer"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
               className="rounded-full border border-divider px-8 py-3 text-center font-semibold text-fg transition-colors hover:border-accent/40 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-base"
             >
-              View on GitHub
+              Build a Node
             </motion.a>
           </div>
         </motion.div>

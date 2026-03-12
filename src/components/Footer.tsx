@@ -41,9 +41,10 @@ const TECH_STACK: TechBadge[] = [
 ];
 
 const FOOTER_LINKS = [
-  { label: 'GitHub', href: 'https://github.com/projectcontinuum', external: true },
-  { label: 'Documentation', href: '#features', external: false },
-  { label: 'Contact', href: 'mailto:access@projectcontinuum.io', external: false },
+  { label: 'GitHub Org', href: 'https://github.com/projectcontinuum', external: true },
+  { label: 'Core Repo', href: 'https://github.com/projectcontinuum/Continuum', external: true },
+  { label: 'Feature Template', href: 'https://github.com/projectcontinuum/continuum-feature-template', external: true },
+  { label: 'Issues', href: 'https://github.com/projectcontinuum/Continuum/issues', external: true },
 ] as const;
 
 export default function Footer() {
@@ -53,10 +54,10 @@ export default function Footer() {
         <div className="grid gap-8 sm:grid-cols-3">
           {/* About */}
           <div>
-            <span className="text-gradient text-lg font-bold">Continuum</span>
+            <span className="text-gradient text-lg font-bold">Project Continuum</span>
             <p className="mt-3 text-sm leading-relaxed text-fg-muted">
-              Self-hosted, multi-tenant chemistry workflow platform. Built for pharma R&amp;D teams
-              who need GPU-scale computational pipelines without the DevOps overhead.
+              Open-source, cloud-native visual workflow platform. Inspired by KNIME, built for
+              the cloud, designed to never die. Apache 2.0 licensed.
             </p>
           </div>
 
@@ -98,7 +99,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-10 border-t border-divider pt-6 text-center text-sm text-fg-muted/70">
-          &copy; {new Date().getFullYear()} Continuum. All rights reserved.
+          Apache 2.0 License &middot; &copy; {new Date().getFullYear()} Project Continuum contributors.
         </div>
       </div>
     </footer>
