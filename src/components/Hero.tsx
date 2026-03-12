@@ -39,7 +39,7 @@ function MoleculeSVG({ reducedMotion }: { reducedMotion: boolean }) {
       animate={reducedMotion ? undefined : { rotate: 360 }}
       transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
     >
-      <polygon points={hexPointsStr} fill="none" stroke="#C4A8FF" strokeWidth="1.5" opacity="0.5" />
+      <polygon points={hexPointsStr} fill="none" stroke="var(--svg-accent)" strokeWidth="1.5" opacity="0.5" />
 
       {/* Branch lines */}
       {BRANCHES.map((b, i) => (
@@ -49,7 +49,7 @@ function MoleculeSVG({ reducedMotion }: { reducedMotion: boolean }) {
           y1={b.fromY}
           x2={b.x}
           y2={b.y}
-          stroke="#705697"
+          stroke="var(--svg-purple)"
           strokeWidth="1.5"
           opacity="0.6"
         />
@@ -62,7 +62,7 @@ function MoleculeSVG({ reducedMotion }: { reducedMotion: boolean }) {
           cx={p.x}
           cy={p.y}
           r="5"
-          fill="#C4A8FF"
+          fill="var(--svg-accent)"
           animate={reducedMotion ? undefined : { scale: [1, 1.3, 1], opacity: [0.7, 1, 0.7] }}
           transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
         />
@@ -75,7 +75,7 @@ function MoleculeSVG({ reducedMotion }: { reducedMotion: boolean }) {
           cx={b.x}
           cy={b.y}
           r="4"
-          fill="#705697"
+          fill="var(--svg-purple)"
           animate={reducedMotion ? undefined : { scale: [1, 1.4, 1], opacity: [0.6, 1, 0.6] }}
           transition={{ duration: 2.5, repeat: Infinity, delay: i * 0.5 }}
         />
@@ -85,7 +85,7 @@ function MoleculeSVG({ reducedMotion }: { reducedMotion: boolean }) {
       <circle cx={CENTER.x} cy={CENTER.y} r="70" fill="url(#glow)" opacity="0.15" />
       <defs>
         <radialGradient id="glow">
-          <stop offset="0%" stopColor="#C4A8FF" />
+          <stop offset="0%" stopColor="var(--svg-accent)" />
           <stop offset="100%" stopColor="transparent" />
         </radialGradient>
       </defs>
@@ -117,7 +117,7 @@ export default function Hero() {
             <br />
             AI-Powered Chemistry Workflows
           </h1>
-          <p className="mt-6 max-w-lg text-lg text-gray-400">
+          <p className="mt-6 max-w-lg text-lg text-fg-muted">
             Drag-drop nodes. GPU scale. Zero setup. Build, execute, and iterate on computational
             chemistry pipelines — from RDKit to ML models — all in your browser.
           </p>
@@ -126,7 +126,7 @@ export default function Hero() {
               href={CTA_HREF}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
-              className="rounded-full bg-accent px-8 py-3 text-center font-semibold text-navy transition-colors hover:bg-accent/90 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-navy"
+              className="rounded-full bg-accent px-8 py-3 text-center font-semibold text-on-accent transition-colors hover:bg-accent/90 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-base"
             >
               Request Early Access
             </motion.a>
@@ -136,7 +136,7 @@ export default function Hero() {
               rel="noopener noreferrer"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
-              className="rounded-full border border-white/20 px-8 py-3 text-center font-semibold text-white transition-colors hover:border-white/40 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-navy"
+              className="rounded-full border border-divider px-8 py-3 text-center font-semibold text-fg transition-colors hover:border-accent/40 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-base"
             >
               View on GitHub
             </motion.a>

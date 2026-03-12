@@ -48,13 +48,13 @@ const FOOTER_LINKS = [
 
 export default function Footer() {
   return (
-    <footer className="border-t border-white/10 bg-navy" role="contentinfo">
+    <footer className="border-t border-divider bg-base" role="contentinfo">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid gap-8 sm:grid-cols-3">
           {/* About */}
           <div>
             <span className="text-gradient text-lg font-bold">Continuum</span>
-            <p className="mt-3 text-sm leading-relaxed text-gray-400">
+            <p className="mt-3 text-sm leading-relaxed text-fg-muted">
               Self-hosted, multi-tenant chemistry workflow platform. Built for pharma R&amp;D teams
               who need GPU-scale computational pipelines without the DevOps overhead.
             </p>
@@ -62,14 +62,14 @@ export default function Footer() {
 
           {/* Links */}
           <div>
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-400">Links</h3>
+            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-fg-muted">Links</h3>
             <ul className="space-y-2">
               {FOOTER_LINKS.map((link) => (
                 <li key={link.label}>
                   <a
                     href={link.href}
                     {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                    className="text-sm text-gray-400 transition-colors hover:text-white"
+                    className="text-sm text-fg-muted transition-colors hover:text-fg"
                   >
                     {link.label}
                   </a>
@@ -80,14 +80,14 @@ export default function Footer() {
 
           {/* Tech stack badges */}
           <div>
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-400">
+            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-fg-muted">
               Built With
             </h3>
             <div className="flex flex-wrap gap-2">
               {TECH_STACK.map((badge) => (
                 <span
                   key={badge.name}
-                  className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-sm text-gray-300"
+                  className="inline-flex items-center gap-2 rounded-full bg-overlay/10 px-3 py-1 text-sm text-fg-muted"
                 >
                   {badge.icon}
                   {badge.name}
@@ -97,7 +97,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-10 border-t border-white/10 pt-6 text-center text-sm text-gray-500">
+        <div className="mt-10 border-t border-divider pt-6 text-center text-sm text-fg-muted/70">
           &copy; {new Date().getFullYear()} Continuum. All rights reserved.
         </div>
       </div>

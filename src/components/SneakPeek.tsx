@@ -37,13 +37,13 @@ export default function SneakPeek() {
           <h2 id="preview-heading" className="text-3xl font-bold sm:text-4xl">
             See the <span className="text-gradient">workflow editor</span> in action
           </h2>
-          <p className="mt-4 text-gray-400">
+          <p className="mt-4 text-fg-muted">
             Theia-powered IDE meets visual DAG builder. Design pipelines as naturally as drawing on a whiteboard.
           </p>
         </motion.div>
 
         <motion.div
-          className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-navy via-accent/5 to-purple/5"
+          className="relative overflow-hidden rounded-2xl border border-divider bg-gradient-to-br from-base via-accent/5 to-purple/5"
           variants={fadeInUp}
           initial="hidden"
           whileInView="visible"
@@ -61,7 +61,7 @@ export default function SneakPeek() {
                   y1={`${c.from.y}%`}
                   x2={`${c.to.x}%`}
                   y2={`${c.to.y}%`}
-                  stroke="#C4A8FF"
+                  stroke="var(--svg-accent)"
                   strokeWidth="1.5"
                   strokeDasharray="6 4"
                   opacity="0.4"
@@ -85,13 +85,13 @@ export default function SneakPeek() {
             ))}
 
             {/* Center overlay with CTA */}
-            <div className="absolute inset-0 flex items-center justify-center bg-navy/40">
+            <div className="absolute inset-0 flex items-center justify-center bg-base/40">
               <motion.button
                 type="button"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => window.open('https://github.com/projectcontinuum', '_blank')}
-                className="flex items-center gap-3 rounded-full bg-white/10 px-6 py-3 font-semibold text-white backdrop-blur transition-colors hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-navy"
+                className="flex items-center gap-3 rounded-full bg-overlay/10 px-6 py-3 font-semibold text-fg backdrop-blur transition-colors hover:bg-overlay/20 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-base"
                 aria-label="Watch demo video of Theia workflow editor"
               >
                 <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">

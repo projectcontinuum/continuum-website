@@ -105,7 +105,7 @@ export default function Features() {
           <h2 id="features-heading" className="text-3xl font-bold sm:text-4xl">
             Everything you need to <span className="text-gradient">accelerate discovery</span>
           </h2>
-          <p className="mt-4 text-gray-400">
+          <p className="mt-4 text-fg-muted">
             From molecule to model, Continuum handles the entire computational chemistry pipeline.
           </p>
         </motion.div>
@@ -123,11 +123,11 @@ export default function Features() {
               variants={fadeInUp}
               transition={{ duration: reducedMotion ? 0 : 0.5 }}
               whileHover={reducedMotion ? undefined : { y: -8 }}
-              className={`group rounded-2xl border border-white/10 bg-white/5 p-6 transition-shadow ${card.glowClass}`}
+              className={`group rounded-2xl border border-divider bg-card p-6 transition-shadow ${card.glowClass}`}
             >
               <div className="mb-4 text-accent group-hover:text-highlight transition-colors">{card.icon}</div>
               <h3 className="mb-2 text-lg font-semibold">{card.title}</h3>
-              <p className="text-sm leading-relaxed text-gray-400">{card.description}</p>
+              <p className="text-sm leading-relaxed text-fg-muted">{card.description}</p>
             </motion.article>
           ))}
         </motion.div>
