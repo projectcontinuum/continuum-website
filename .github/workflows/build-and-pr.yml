@@ -53,6 +53,9 @@ jobs:
           # Copy build output to root
           cp -r /tmp/dist-output/. .
 
+          # CNAME file so GitHub Pages keeps the custom domain after each deploy
+          echo "projectcontinuum.org" > CNAME
+
           # Stage all files
           git add -A
 
