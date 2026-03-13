@@ -1,0 +1,83 @@
+name: Build & PR to live
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  build-and-pr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Save dist to temp
+        run: cp -r dist /tmp/dist-output
+
+      - name: Create branch and push dist
+        id: push
+        run: |
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          BRANCH="build/dist-${SHORT_SHA}"
+          echo "branch=${BRANCH}" >> "$GITHUB_OUTPUT"
+          echo "short_sha=${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Switch to a new branch based on live
+          git fetch origin live
+          git checkout -b "$BRANCH" origin/live
+
+          # Replace dist with the fresh build
+          rm -rf dist
+          cp -r /tmp/dist-output dist
+
+          # Force-add dist (overrides .gitignore)
+          git add -f dist/
+
+          # Commit if there are actual changes
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          else
+            git commit -m "build: update dist from main@${SHORT_SHA}"
+            git push origin "$BRANCH"
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create Pull Request
+        if: steps.push.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SHORT_SHA="${{ steps.push.outputs.short_sha }}"
+          gh pr create \
+            --base live \
+            --head "${{ steps.push.outputs.branch }}" \
+            --title "Deploy: build from main@${SHORT_SHA}" \
+            --body "$(cat <<'EOF'
+          Automated build from main branch.
+
+          - **Source commit:** `${{ steps.push.outputs.short_sha }}`
+          - **Build command:** `npm run build`
+          - **Contents:** Latest `dist/` output
+          EOF
+          )"
