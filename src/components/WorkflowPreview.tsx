@@ -446,12 +446,21 @@ function useSimulatedExecution(wf: WorkflowExample) {
 function WorkflowCanvas({ wf, active, setActive }: { wf: WorkflowExample; active: number; setActive: (i: number) => void }) {
   const { nodes, edges, run, isRunning, isDone } = useSimulatedExecution(wf);
   const { fitView } = useReactFlow();
+  const [fullscreen, setFullscreen] = useState(false);
 
-  /* Re-fit when the active workflow changes */
+  /* Re-fit when the active workflow changes or fullscreen toggles */
   useEffect(() => {
     const t = setTimeout(() => fitView({ padding: 0.25, duration: 300 }), 50);
     return () => clearTimeout(t);
-  }, [active, fitView]);
+  }, [active, fullscreen, fitView]);
+
+  /* Close fullscreen on Escape */
+  useEffect(() => {
+    if (!fullscreen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setFullscreen(false); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [fullscreen]);
 
   return (
     <>
@@ -499,31 +508,107 @@ function WorkflowCanvas({ wf, active, setActive }: { wf: WorkflowExample; active
 
       {/* Canvas */}
       <div className="mx-auto max-w-6xl px-4 pb-20 sm:px-6 sm:pb-28 lg:px-8">
-        <div className="overflow-hidden rounded-2xl border border-divider" style={{ height: '40vh', minHeight: 320 }}>
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            nodeTypes={nodeTypes}
-            fitView
-            fitViewOptions={{ padding: 0.25 }}
-            nodesDraggable={false}
-            nodesConnectable={false}
-            elementsSelectable={false}
-            panOnDrag
-            zoomOnScroll={false}
-            proOptions={{ hideAttribution: true }}
-            defaultEdgeOptions={{
-              style: { stroke: 'var(--svg-accent)', strokeWidth: 2, opacity: 0.5 },
-            }}
-          >
-            <Background gap={20} size={1} color="var(--svg-accent)" style={{ opacity: 0.08 }} />
-            <Controls
-              showInteractive={false}
-              className="!rounded-lg !border-divider !bg-card !shadow-none [&>button]:!border-divider [&>button]:!bg-card [&>button]:!fill-fg-muted [&>button:hover]:!bg-overlay/10"
-            />
-          </ReactFlow>
+        <div className="relative overflow-hidden rounded-2xl border border-divider" style={{ height: fullscreen ? 0 : '40vh', minHeight: fullscreen ? 0 : 320 }}>
+          {!fullscreen && (
+            <>
+              {/* Fullscreen toggle */}
+              <button
+                type="button"
+                onClick={() => setFullscreen(true)}
+                title="View fullscreen"
+                className="absolute right-3 top-3 z-10 rounded-lg border border-divider bg-card p-1.5 text-fg-muted transition-colors hover:bg-overlay/10 hover:text-fg"
+              >
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+                </svg>
+              </button>
+              <ReactFlow
+                nodes={nodes}
+                edges={edges}
+                nodeTypes={nodeTypes}
+                fitView
+                fitViewOptions={{ padding: 0.25 }}
+                nodesDraggable={false}
+                nodesConnectable={false}
+                elementsSelectable={false}
+                panOnDrag
+                zoomOnScroll={false}
+                proOptions={{ hideAttribution: true }}
+                defaultEdgeOptions={{
+                  style: { stroke: 'var(--svg-accent)', strokeWidth: 2, opacity: 0.5 },
+                }}
+              >
+                <Background gap={20} size={1} color="var(--svg-accent)" style={{ opacity: 0.08 }} />
+                <Controls
+                  showInteractive={false}
+                  className="!rounded-lg !border-divider !bg-card !shadow-none [&>button]:!border-divider [&>button]:!bg-card [&>button]:!fill-fg-muted [&>button:hover]:!bg-overlay/10"
+                />
+              </ReactFlow>
+            </>
+          )}
         </div>
       </div>
+
+      {/* Fullscreen overlay */}
+      {fullscreen && (
+        <div className="fixed inset-0 z-50 flex flex-col bg-base">
+          {/* Fullscreen header */}
+          <div className="flex items-center justify-between border-b border-divider px-4 py-3">
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-semibold text-fg">{wf.name}</span>
+              <span className="text-xs text-fg-muted">{wf.description}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={run}
+                disabled={isRunning}
+                className="flex items-center gap-2 rounded-full bg-green-600 px-3 py-1 text-xs font-semibold text-white transition-colors hover:bg-green-500 disabled:opacity-50"
+              >
+                <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M6.3 2.8A1.5 1.5 0 004 4.1v11.8a1.5 1.5 0 002.3 1.3l9-5.9a1.5 1.5 0 000-2.6l-9-5.9z" />
+                </svg>
+                {isDone ? 'Replay' : isRunning ? 'Running...' : 'Run'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setFullscreen(false)}
+                title="Exit fullscreen (Esc)"
+                className="rounded-lg border border-divider bg-card p-1.5 text-fg-muted transition-colors hover:bg-overlay/10 hover:text-fg"
+              >
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          {/* Fullscreen canvas */}
+          <div className="flex-1">
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              nodeTypes={nodeTypes}
+              fitView
+              fitViewOptions={{ padding: 0.15 }}
+              nodesDraggable={false}
+              nodesConnectable={false}
+              elementsSelectable={false}
+              panOnDrag
+              zoomOnScroll
+              proOptions={{ hideAttribution: true }}
+              defaultEdgeOptions={{
+                style: { stroke: 'var(--svg-accent)', strokeWidth: 2, opacity: 0.5 },
+              }}
+            >
+              <Background gap={20} size={1} color="var(--svg-accent)" style={{ opacity: 0.08 }} />
+              <Controls
+                showInteractive={false}
+                className="!rounded-lg !border-divider !bg-card !shadow-none [&>button]:!border-divider [&>button]:!bg-card [&>button]:!fill-fg-muted [&>button:hover]:!bg-overlay/10"
+              />
+            </ReactFlow>
+          </div>
+        </div>
+      )}
     </>
   );
 }
