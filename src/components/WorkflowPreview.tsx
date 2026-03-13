@@ -13,7 +13,7 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
-/* ── Stage status enum matching Continuum's StageStatus ── */
+/* ── Stage status enum matching continuum-platform-core's StageStatus ── */
 type StageStatus = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'FAILED';
 type NodeStatus = 'IDLE' | 'BUSY' | 'SUCCESS';
 

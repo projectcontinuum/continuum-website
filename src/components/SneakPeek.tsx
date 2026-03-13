@@ -2,9 +2,9 @@ import { motion, useReducedMotion } from 'framer-motion';
 
 const REPOS = [
   {
-    name: 'Continuum',
+    name: 'continuum-platform-core',
     description: 'Core backend — API server, worker framework, shared Parquet/S3 libraries',
-    href: 'https://github.com/projectcontinuum/Continuum',
+    href: 'https://github.com/projectcontinuum/continuum-platform-core',
     tags: ['Kotlin', 'Spring Boot', 'Temporal'],
   },
   {

@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -sL \"https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/temporal.svg\")"
+    ]
+  }
+}
