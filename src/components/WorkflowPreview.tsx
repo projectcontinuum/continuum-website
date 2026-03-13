@@ -555,8 +555,20 @@ function WorkflowCanvas({ wf, active, setActive }: { wf: WorkflowExample; active
           {/* Fullscreen header */}
           <div className="flex items-center justify-between border-b border-divider px-4 py-3">
             <div className="flex items-center gap-3">
-              <span className="text-sm font-semibold text-fg">{wf.name}</span>
-              <span className="text-xs text-fg-muted">{wf.description}</span>
+              {WORKFLOWS.map((w, i) => (
+                <button
+                  key={w.name}
+                  type="button"
+                  onClick={() => setActive(i)}
+                  className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                    i === active
+                      ? 'bg-accent text-on-accent'
+                      : 'bg-overlay/10 text-fg-muted hover:text-fg'
+                  }`}
+                >
+                  {w.name}
+                </button>
+              ))}
             </div>
             <div className="flex items-center gap-2">
               <button
@@ -620,7 +632,7 @@ export default function WorkflowPreview() {
 
   return (
     <section id="see-it" aria-labelledby="see-it-heading">
-      <ReactFlowProvider key={wf.name}>
+      <ReactFlowProvider>
         <WorkflowCanvas wf={wf} active={active} setActive={setActive} />
       </ReactFlowProvider>
     </section>
