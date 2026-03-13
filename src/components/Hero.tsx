@@ -231,28 +231,31 @@ function PipelineSVG({ reducedMotion }: { reducedMotion: boolean }) {
 
       <circle cx="184" cy="75" r="120" fill="url(#hero-glow)" opacity="0.05" />
 
-      {/* ── DAG edges (fixed in place) ── */}
-      {EDGE_PATHS.map((e) => (
-        <g key={`edge-${e.idx}`}>
-          <motion.path
-            d={e.d} fill="none"
-            stroke="var(--svg-accent)" strokeWidth="1.5" strokeDasharray="5 3"
-            opacity="0.25"
-            animate={reducedMotion ? undefined : { strokeDashoffset: [0, -16] }}
-            transition={{ duration: 1.2, repeat: Infinity, ease: 'linear', delay: e.idx * 0.12 }}
-          />
-          {!reducedMotion && (
-            <>
-              <path id={`ep-${e.idx}`} d={e.d} fill="none" stroke="none" />
-              <circle r="2" fill="var(--svg-accent)" opacity="0.6">
-                <animateMotion dur={`${1.6 + e.idx * 0.1}s`} repeatCount="indefinite" begin={`${e.idx * 0.18}s`}>
-                  <mpath href={`#ep-${e.idx}`} />
-                </animateMotion>
-              </circle>
-            </>
-          )}
-        </g>
-      ))}
+      {/* ── DAG edges (animate only edges feeding an executing node) ── */}
+      {EDGE_PATHS.map((e) => {
+        const feedsActive = !!step.active[e.to];
+        return (
+          <g key={`edge-${e.idx}`}>
+            <motion.path
+              d={e.d} fill="none"
+              stroke="var(--svg-accent)" strokeWidth="1.5" strokeDasharray="5 3"
+              opacity="0.25"
+              animate={!reducedMotion && feedsActive ? { strokeDashoffset: [0, -16] } : undefined}
+              transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}
+            />
+            {!reducedMotion && feedsActive && (
+              <>
+                <path id={`ep-${e.idx}`} d={e.d} fill="none" stroke="none" />
+                <circle r="2" fill="var(--svg-accent)" opacity="0.6">
+                  <animateMotion dur={`${1.6 + e.idx * 0.1}s`} repeatCount="indefinite" begin={`${e.idx * 0.18}s`}>
+                    <mpath href={`#ep-${e.idx}`} />
+                  </animateMotion>
+                </circle>
+              </>
+            )}
+          </g>
+        );
+      })}
 
       {/* ── Worker racks (animate up behind executing nodes) ── */}
       {WORKERS.map((w) => {
