@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 
+const DIAGRAM_SCALE = 1.9; // scale multiplier: 1.0 = base, 1.5 = 50% bigger
+
 const CTA_HREF = 'https://github.com/projectcontinuum/Continuum';
 const TEMPLATE_HREF = 'https://github.com/projectcontinuum/continuum-feature-template';
 
@@ -235,7 +237,7 @@ function PipelineSVG({ reducedMotion }: { reducedMotion: boolean }) {
   return (
     <svg
       viewBox="0 -32 368 200"
-      className="h-56 w-full max-w-xl sm:h-64 md:h-72 lg:h-80"
+      className="w-full"
       role="img"
       aria-label="Branching workflow DAG: worker racks slide up to execute matching nodes, then return. Demonstrates crash recovery via capability-based reassignment."
     >
@@ -406,7 +408,8 @@ export default function Hero() {
         </motion.div>
 
         <motion.div
-          className="flex-shrink-0"
+          className="min-w-0 overflow-hidden"
+          style={{ width: DIAGRAM_SCALE * 300, maxWidth: '100%' }}
           variants={fadeInUp}
           initial="hidden"
           animate="visible"
