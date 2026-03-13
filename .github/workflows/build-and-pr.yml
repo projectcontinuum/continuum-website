@@ -28,10 +28,10 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Save dist to temp
-        run: cp -r dist /tmp/dist-output
+      - name: Save build output to temp
+        run: cp -r dist/. /tmp/dist-output
 
-      - name: Create branch and push dist
+      - name: Create branch and push build
         id: push
         run: |
           SHORT_SHA=$(git rev-parse --short HEAD)
@@ -46,19 +46,22 @@ jobs:
           git fetch origin live
           git checkout -b "$BRANCH" origin/live
 
-          # Replace dist with the fresh build
-          rm -rf dist
-          cp -r /tmp/dist-output dist
+          # Clear everything except .git
+          git rm -rf . || true
+          git clean -fd
 
-          # Force-add dist (overrides .gitignore)
-          git add -f dist/
+          # Copy build output to root
+          cp -r /tmp/dist-output/. .
+
+          # Stage all files
+          git add -A
 
           # Commit if there are actual changes
           if git diff --cached --quiet; then
             echo "No changes to commit"
             echo "has_changes=false" >> "$GITHUB_OUTPUT"
           else
-            git commit -m "build: update dist from main@${SHORT_SHA}"
+            git commit -m "build: update site from main@${SHORT_SHA}"
             git push origin "$BRANCH"
             echo "has_changes=true" >> "$GITHUB_OUTPUT"
           fi
@@ -78,6 +81,6 @@ jobs:
 
           - **Source commit:** `${{ steps.push.outputs.short_sha }}`
           - **Build command:** `npm run build`
-          - **Contents:** Latest `dist/` output
+          - **Contents:** Static site output at root (for GitHub Pages)
           EOF
           )"
