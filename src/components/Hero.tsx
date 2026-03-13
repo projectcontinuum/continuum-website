@@ -200,6 +200,23 @@ function WorkflowNode({ homeX, homeY, label, requires, executing, border, reduce
         fontSize="3.2" fontFamily="Inter,system-ui,sans-serif" fontWeight="500" opacity="0.5">
         {requires}
       </text>
+      {/* Spinning arc — processing indicator */}
+      {executing && !reducedMotion && (
+        <circle
+          cx={homeX + NW / 2} cy={homeY + NH / 2}
+          r={15}
+          fill="none" stroke={border} strokeWidth="1.5"
+          strokeDasharray="14 80" strokeLinecap="round"
+          opacity="0.55"
+        >
+          <animateTransform
+            attributeName="transform" type="rotate"
+            from={`0 ${homeX + NW / 2} ${homeY + NH / 2}`}
+            to={`360 ${homeX + NW / 2} ${homeY + NH / 2}`}
+            dur="1.2s" repeatCount="indefinite"
+          />
+        </circle>
+      )}
     </g>
   );
 }
@@ -218,7 +235,7 @@ function PipelineSVG({ reducedMotion }: { reducedMotion: boolean }) {
   return (
     <svg
       viewBox="0 -32 368 200"
-      className="h-52 w-full max-w-xl sm:h-60 md:h-68 lg:h-76"
+      className="h-56 w-full max-w-xl sm:h-64 md:h-72 lg:h-80"
       role="img"
       aria-label="Branching workflow DAG: worker racks slide up to execute matching nodes, then return. Demonstrates crash recovery via capability-based reassignment."
     >
